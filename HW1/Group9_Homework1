@@ -1,0 +1,37 @@
+## Introduction
+
+As a part of this assignment, we will explore the Perceptron model and its applications in solving important classification problems. The Perceptron is one of the fundamental building blocks of machine learning and forms the basis for more complex neural network architectures. In that context, we will be addressing the following problems and questions posed in Lecture 3 Perceptron.ipynb and Homework 1.
+
+We will be conducting our explorations using the commonly used Iris dataset. This dataset is a staple in the field of machine learning, consisting of iris flower samples with different measurements, making it an ideal testbed for our Perceptron experiments.
+
+We will be providing code implementations, observations, and results to address the questions. By the end, we aim to deepen our understanding of the Perceptron model and its versatility in solving classification tasks, from binary to multiclass scenarios, and from simple 2D data to higher-dimensional feature spaces.
+
+Now, let's proceed to address with each problem and provide solutions and observations accordingly.
+
+## Question 1: Perceptron - Linear Separability
+
+We mentioned that perceptron converges if the data is linearly separable. Try sklearn perceptron model for versicolor and virginica, with sepal length and petal length. What do you 
+observe?
+
+## Breif Overview:
+Here we will be working with the Perceptron model using the scikit-learn library to classify classes i.e. "versicolor" and "virginica"  the Iris dataset
+
+which are based on two major features i.e. sepal length and petal length. 
+
+We will be observing the behavior of the Perceptron model with linearly seperable data.
+
+### Step 1: Import the Iris Dataset
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+
+# Import a function for plotting the decision boudaries
+# !pip install mlxtend
+from mlxtend.plotting import plot_decision_regions
+
+### Step 2 : Read the Iris Dataset
+
+# Read the iris dataset into a pandas DataFrame object
+df = pd.read_csv("iris_dataset.csv")
