@@ -35,3 +35,5 @@ from mlxtend.plotting import plot_decision_regions
 
 # Read the iris dataset into a pandas DataFrame object
 df = pd.read_csv("iris_dataset.csv")
+
+df.info()
