@@ -37,3 +37,55 @@ from mlxtend.plotting import plot_decision_regions
 df = pd.read_csv("iris_dataset.csv")
 
 df.info()
+
+### Step 3: Extract the  iris dataset for Versicolor and Virginica
+
+df = df.iloc[50:]
+df
+
+X = df[['sepal_length', 'petal_length']]
+y = df['species']
+
+##scatter plot
+
+df1 = df[df.species == "versicolor"]
+df2 = df[df.species == "virginica"]
+
+plt.figure(figsize = (8, 6))
+plt.scatter(df1.sepal_length, df1.petal_length, color="pink", label="versicolor")
+plt.scatter(df2.sepal_length, df2.petal_length, color="thistle", label="virginica")
+plt.title("Scatter Plot for Iris Species", fontsize = 18)
+plt.xlabel("sepal length", fontsize=15)
+plt.ylabel("petal length", fontsize=15)
+plt.legend();
+
+### Step 4: Label the categorical "Y" Values as -1 for Versicolor and 1 for Virginica
+
+y = np.where(y == 'versicolor', -1, 1)
+print(y)
+
+### Step 5: Apply the "Perceptron" model using scikit-learn
+
+from sklearn.linear_model import Perceptron
+model = Perceptron()
+model.fit(X, y)
+y_predict = model.predict(X)
+print(y == y_predict)
+
+### Step 6: Evaluate the model
+
+model.score(X, y)
+model.coef_   # weights
+model.intercept_  # bias 
+X_np = X.to_numpy()
+plt.figure(figsize = (8, 6))
+plot_decision_regions(X_np, y, clf = model, colors = "red,green")
+plt.title("Sklearn Perceptron", fontsize = 20)
+plt.xlabel("sepal length", fontsize = 16)
+plt.ylabel("petal length", fontsize = 16);
+
+
+
+
+
+
