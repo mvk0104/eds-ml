@@ -1,0 +1,95 @@
+###Question 3: Try to generalize My_Perceptron code so it could be used for any number of inputs. (Hint: 
+Recall, that for a list w we can use w[-1] and w[:-1] to access the last value in the list and all 
+the values expect the very last value. Also, use np.dot, NumPy dot product, to compute the 
+pre-activation value of z.)
+
+## Answer 3: Generalizing "My Perceptron" for Any Number of Inputs
+
+In this problem, we will be generalizing the "My Perceptron" code to handle any number of inputs. 
+We will be using Python's flexibility to adapt the Perceptron class, allowing it to accommodate multiple features. 
+Along with that, we will be using NumPy's dot product to compute the pre-activation values efficiently.
+
+### Step 1: Modify MyPerceptron class to MultiInputPerceptron
+
+class MultiInputPerceptron(object):
+    def __init__(self, eta=0.5, epochs=50):
+        self.eta = eta
+        self.epochs = epochs
+
+    def fit(self, X, y):
+        # Initialize weights 'w' as a NumPy array with the same length as the number of features in X
+        self.w = np.random.rand(X.shape[1])
+        self.b = np.random.rand(1)
+        self.errors = []
+
+        for _ in range(self.epochs):
+            errors = 0
+            for xi, yi in zip(X, y):
+                update = self.eta * (self.predict(xi) - yi)
+                self.w = self.w - update * xi                
+                self.b = self.b - update
+                errors = errors + int(update != 0)
+            if errors == 0:
+                return self
+            else:
+                self.errors.append(errors)
+
+        return self
+
+    def weighted_sum(self, x):
+        return np.dot(x, self.w) + self.b
+
+    def predict(self, x):
+        return np.where(self.weighted_sum(x) > 0.0, 1, -1)
+
+
+### Step 2: Importing the Data
+To classify setosa and versicolor based on four inputs: sepal length, sepal width, petal length, and petal width. We will be applying the generalized perceptron model
+
+df = pd.read_csv("iris_dataset.csv")
+df = df.iloc[:100]
+df
+
+X_4D = df.iloc[:, :4].to_numpy()
+y = df.iloc[:, -1]
+y = np.where(y == 'versicolor', -1, 1)
+
+### Step 3: Applying Perceptron Model using MultiInputPerceptron
+my_clf_2 = MultiInputPerceptron()
+
+# Call the fit method 
+my_clf_2.fit(X_4D, y)
+y_pred = my_clf_2.predict(X_4D)
+
+y_pred = y_pred.reshape(100)
+y_pred
+
+y
+
+# Compare actual and predicted labels of y
+print(y == y_pred)
+
+### Step 4: Evaluating the Model
+Based on comparison, we can see that our prediction achieves 100% accuracy in classifying 'setosa' and 'versicolor' based on four features i.e. sepal length, sepal width, petal length and petal width.
+## error plot
+# We plot the errors for each and every iteration
+# We also see the number of iterations needed for the algorithm to find the classifier
+
+plt.figure(figsize = (8, 6))
+plt.plot(range(1, len(my_clf_2.errors)+1), my_clf_2.errors,
+         marker = "o")
+plt.title("Error plot", fontsize = 15)
+plt.xlabel("The number of iterations", fontsize = 15)
+plt.ylabel("The number of misclassifications", fontsize = 15)
+plt.xticks(range(1, len(my_clf_2.errors)+1))
+plt.show()
+
+
+reference = Perceptron()
+reference.fit(X_4D, y)
+
+reference.score(X_4D, y)
+
+### Observation:
+We have compared the result after applying perceptron using sklearn library. 
+The accuracy acheived was 100% which is the same as our own MultiInputPerceptron model.
