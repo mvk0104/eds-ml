@@ -1,0 +1,117 @@
+###Question 1: We created My_Perceptron class for only 2 inputs. Extend this code for 3 inputs. 
+Investigate the iris data set and choose 3 features to classify setosa and versicolor using 
+your code. Notice that you cannot easily plot the decision boundary now since the data is 3-
+dimensional, but you can still compare the actual and the predicted labels to see how your 
+algorithm is performing
+
+##In this problem, we will be extending a custom Perceptron class to handle three inputs, "My Perceptron," which is primarily designed for two inputs.
+This extended and customized Perceptron will be used to classify the "setosa" and "versicolor" classes of the Iris dataset based on a choice of three features. 
+As the data is considered to be of higher dimensionality, visualization the decision boundary directly won't be possible , but we can assess the model's performance by comparing actual and predicted labels.
+
+### Step 1: Customization
+
+class ThreeInputPerceptron(object):
+    def __init__(self, eta = 0.5, epochs = 50):
+        self.eta = eta
+        self.epochs = epochs
+        
+    def fit(self, X, y):
+        self.w1 = np.random.rand(1)
+        self.w2 = np.random.rand(1)
+        self.w3 = np.random.rand(1)
+        self.b = np.random.rand(1)
+        
+        self.errors = []
+        
+        for _ in range(self.epochs):
+            errors = 0
+            for xi, yi in zip(X, y):
+                update = self.eta * (self.predict(xi) - yi)
+                self.w1 = self.w1 - update*xi[0]
+                self.w2 = self.w2 - update*xi[1]
+                self.w3 = self.w3 - update*xi[2]
+                self.b = self.b - update
+                errors = errors + int(update != 0)
+            if errors == 0:
+                return self
+            else:
+                self.errors.append(errors)
+            
+        return self
+    
+    def weighted_sum(self, x):
+        self.w = np.array([self.w1, self.w2, self.w3])
+        return np.dot(x, self.w) + self.b
+    
+    def predict(self, x):
+        return np.where(self.weighted_sum(x) > 0.0, 1, -1)
+
+### Step 2: Dataset ( Read and loc)
+
+###We will be using three inputs instead of two which will be  sepal length, sepal width, and petal length and we will be classifing 'setosa' and 'versicolor'.
+
+df = pd.read_csv("iris_dataset.csv")
+df = df.iloc[:100]
+
+X_3D = df[["sepal_length", "sepal_width", "petal_length"]].to_numpy()
+y = df['species']
+y = np.where(y == 'versicolor', -1, 1)
+
+### Step 3: Apply the "Perceptron" model using ThreeInputPerceptron
+
+# Instantiate one instance of My_Perceptron class
+my_clf_1 = ThreeInputPerceptron()
+
+# Call the fit method 
+my_clf_1.fit(X_3D, y)
+
+# Predict labels on X
+y_pred = my_clf_1.predict(X_3D)
+y_pred = y_pred.reshape(100)
+y_pred
+
+y
+
+print(y == y_pred)
+
+### Step 4: Evaluate the Model and plot an error plot
+
+# We will be plotting  the errors for each and every iteration
+# We can also see the number of iterations needed for the algorithm to find the classifier
+
+plt.figure(figsize = (8, 6))
+plt.plot(range(1, len(my_clf_1.errors)+1), my_clf_1.errors, 
+         marker = "o")
+plt.title("Error plot", fontsize = 15)
+plt.xlabel("The number of iterations", fontsize = 15)
+plt.ylabel("The number of misclassifications", fontsize = 15)
+plt.xticks(range(1, len(my_clf_1.errors)+1))
+plt.show()
+
+my_clf_1.w #weights
+
+my_clf_1.b #bias 
+
+### Step 5: Plotting Decision boundary surface
+
+import plotly.graph_objects as go
+# Define a grid to plot the decision boundary surface
+xx, yy = np.meshgrid(np.linspace(X_3D[:, 0].min(), X_3D[:, 0].max(), 50),
+                     np.linspace(X_3D[:, 1].min(), X_3D[:, 1].max(), 50))
+zz = (-my_clf_1.b - my_clf_1.w[0] * xx - my_clf_1.w[1] * yy) / my_clf_1.w[2]
+
+# Create an interactive 3D plot
+fig = go.Figure(data=[
+    go.Surface(z=zz, x=xx, y=yy),
+    go.Scatter3d(x=X_3D[y == -1][:, 0], y=X_3D[y == -1][:, 1], z=X_3D[y == -1][:, 2], mode='markers', marker=dict(color='blue'), name='versicolor'),
+    go.Scatter3d(x=X_3D[y == 1][:, 0], y=X_3D[y == 1][:, 1], z=X_3D[y == 1][:, 2], mode='markers', marker=dict(color='red'), name='setosa')
+])
+
+# Customize the layout
+fig.update_layout(scene=dict(xaxis_title='Sepal Length', yaxis_title='Sepal Width', zaxis_title='Petal Length'),
+                  legend=dict(x=0, y=1, bgcolor='rgba(255, 255, 255, 0.5)'))
+
+# Show the interactive plot
+fig.show()
+
+#### Observation : 100% accuracy
